@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>User Dashboard – Land Sale</title>
+</head>
+<body>
+  <div class="container">
+    <header class="dashboard-header">
+      <h1>Dashboard</h1>
+      <p>Welcome, <span id="userNameDisplay"></span>!</p>
+      <button id="logoutBtn">Logout</button>
+      <br>
+      <p style="font-weight: bolder; text-decoration: underline; cursor: pointer;" onclick="window.location.href = 'home.html'">Explore Lands</p>
+    </header>
+
+    <section>
+      <h2>Your Land Listings</h2>
+      <div id="userLands"></div>
+    </section>
+
+    <section>
+      <h2>Create a New Land Listing</h2>
+      <form id="newLandForm">
+        <input type="text" id="newLandName" placeholder="Land Name" required />
+        <input type="text" id="newArea" placeholder="Area" required />
+        <input type="text" id="newLandType" placeholder="Land Type" required />
+        <textarea id="newAddress" placeholder="Address" required></textarea>
+        <input type="text" id="newState" placeholder="State (in India)" required />
+        <input type="number" id="newPrice" placeholder="Price (in Rs.)" required />
+        <button type="submit">Create Listing</button>
+      </form>
+    </section>
+  </div>
+
+  <script>
+    // Ensure the user is logged in.
+    const userEmail = sessionStorage.getItem("userEmail");
+    const userName = sessionStorage.getItem("userName");
+    const userMobile = sessionStorage.getItem("userMobile");
+    if (!userEmail || !userName) {
+      window.location.href = "index.html";
+    }
+    document.getElementById("userNameDisplay").textContent = userName;
+
+    // Logout button clears sessionStorage.
+    document.getElementById("logoutBtn").addEventListener("click", function() {
+      sessionStorage.clear();
+      window.location.href = "index.html";
+    });
+
+    // Function to fetch and display the current user's land listings.
+    function fetchUserLands() {
+      fetch("https://sheetdb.io/api/v1/6g4qxy990p57f")
+        .then(response => response.json())
+        .then(records => {
+          const userRecords = records.filter(record => record.email === userEmail);
+          const userLandsDiv = document.getElementById("userLands");
+          userLandsDiv.innerHTML = "";
+          if (userRecords.length === 0) {
+            userLandsDiv.innerHTML = "<p>You have no listings yet.</p>";
+          } else {
+            userRecords.forEach(record => {
+              const div = document.createElement("div");
+              div.className = "land-item";
+              div.innerHTML = `
+                <h3>${record.landName}</h3>
+                <p><strong>Area:</strong> ${record.area}</p>
+                <p><strong>Type:</strong> ${record.landType}</p>
+                <p><strong>Address:</strong> ${record.address}, ${record.state}</p>
+                <p><strong>Price:</strong> Rs. ${record.price}</p>
+              `;
+              userLandsDiv.appendChild(div);
+            });
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching records:", error);
+        });
+    }
+
+    fetchUserLands();
+
+    // Handle new land listing submission.
+    document.getElementById("newLandForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const data = {
+        name: userName,
+        email: userEmail,
+        mobile: userMobile,
+        password: sessionStorage.getItem("userPassword"),
+        landName: document.getElementById("newLandName").value,
+        area: document.getElementById("newArea").value,
+        landType: document.getElementById("newLandType").value,
+        address: document.getElementById("newAddress").value,
+        state: document.getElementById("newState").value,
+        price: document.getElementById("newPrice").value
+      };
+
+      fetch("https://sheetdb.io/api/v1/6g4qxy990p57f", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: data })
+      })
+        .then(response => response.json())
+        .then(result => {
+          alert("New listing created successfully!");
+          document.getElementById("newLandForm").reset();
+          fetchUserLands();
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert("Failed to create listing.");
+        });
+    });
+  </script>
+<style>
+    /* General Styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fff8f0; /* light, warm background */
+  color: #333;
+}
+
+header {
+  background: #d35400; /* strong orange */
+  color: #fff;
+  padding: 1em;
+  text-align: center;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 1em;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  width: 90%;
+  max-width: 800px;
+  margin: 2em auto;
+  background: #fff;
+  padding: 2em;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-top: 5px solid #d35400;
+}
+
+h1, h2, h3 {
+  margin-top: 0;
+}
+
+fieldset {
+  border: 1px solid #ccc;
+  margin-bottom: 1em;
+  padding: 1em;
+  border-radius: 4px;
+}
+
+legend {
+  font-weight: bold;
+  padding: 0 0.5em;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form input,
+form textarea {
+  margin-bottom: 1em;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+form button {
+  background: #d35400;
+  color: #fff;
+  border: none;
+  padding: 0.7em;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background 0.3s ease;
+}
+
+form button:hover {
+  background: #e67e22;
+}
+
+/* Land Listing Item */
+.land-item {
+  border: 1px solid #ccc;
+  border-left: 5px solid #8e44ad; /* purple accent */
+  padding: 1em;
+  margin-bottom: 1em;
+  background: #fef6e4;
+}
+
+.land-item h3 {
+  margin-top: 0;
+}
+
+button {
+  background: #8e44ad;
+  color: #fff;
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #9b59b6;
+}
+
+/* Dashboard header styling */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .container {
+    width: 95%;
+    padding: 1em;
+  }
+  .dashboard-header {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+</style>
+
+</body>
+</html>

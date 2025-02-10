@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Land Sale – Sign Up</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Sign Up for Land Sale</h1>
+    <form id="signupForm">
+      <fieldset>
+        <legend>User Information</legend>
+        <input type="text" id="name" placeholder="Full Name" required />
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="tel" id="mobile" placeholder="Mobile Number" required />
+        <input type="password" id="password" placeholder="Password" required />
+      </fieldset>
+      <fieldset>
+        <legend>Land Information</legend>
+        <input type="text" id="landName" placeholder="Land Name" required />
+        <input type="text" id="area" placeholder="Area" required />
+        <input type="text" id="landType" placeholder="Land Type" required />
+        <textarea id="address" placeholder="Address" required></textarea>
+        <input type="text" id="state" placeholder="State (in India)" required />
+        <input type="number" id="price" placeholder="Price (in Rs.)" required />
+      </fieldset>
+      <button type="submit">Sign Up</button>
+    </form>
+    <p>Already have an account? <a href="index.html">Login Here</a></p>
+    <br>
+    <a href="terms.html"><p>Terms & Conditions</p></a>
+  </div>
+
+  <script>
+    document.getElementById("signupForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const data = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        mobile: document.getElementById("mobile").value,
+        password: document.getElementById("password").value,
+        landName: document.getElementById("landName").value,
+        area: document.getElementById("area").value,
+        landType: document.getElementById("landType").value,
+        address: document.getElementById("address").value,
+        state: document.getElementById("state").value,
+        price: document.getElementById("price").value
+      };
+
+      fetch("https://sheetdb.io/api/v1/6g4qxy990p57f", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: data })
+      })
+        .then(response => response.json())
+        .then(result => {
+          alert("Signup successful!");
+          // Save some credentials in sessionStorage for later use.
+          sessionStorage.setItem("userEmail", data.email);
+          sessionStorage.setItem("userName", data.name);
+          sessionStorage.setItem("userMobile", data.mobile);
+          sessionStorage.setItem("userPassword", data.password);
+          window.location.href = "login.html";
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert("Signup failed. Please try again.");
+        });
+    });
+  </script>
+
+  <style>
+    /* General Styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fff8f0; /* light, warm background */
+  color: #333;
+}
+
+header {
+  background: #d35400; /* strong orange */
+  color: #fff;
+  padding: 1em;
+  text-align: center;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 1em;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  width: 90%;
+  max-width: 800px;
+  margin: 2em auto;
+  background: #fff;
+  padding: 2em;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-top: 5px solid #d35400;
+}
+
+h1, h2, h3 {
+  margin-top: 0;
+}
+
+fieldset {
+  border: 1px solid #ccc;
+  margin-bottom: 1em;
+  padding: 1em;
+  border-radius: 4px;
+}
+
+legend {
+  font-weight: bold;
+  padding: 0 0.5em;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form input,
+form textarea {
+  margin-bottom: 1em;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+form button {
+  background: #d35400;
+  color: #fff;
+  border: none;
+  padding: 0.7em;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background 0.3s ease;
+}
+
+form button:hover {
+  background: #e67e22;
+}
+
+/* Land Listing Item */
+.land-item {
+  border: 1px solid #ccc;
+  border-left: 5px solid #8e44ad; /* purple accent */
+  padding: 1em;
+  margin-bottom: 1em;
+  background: #fef6e4;
+}
+
+.land-item h3 {
+  margin-top: 0;
+}
+
+button {
+  background: #8e44ad;
+  color: #fff;
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #9b59b6;
+}
+
+/* Dashboard header styling */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .container {
+    width: 95%;
+    padding: 1em;
+  }
+  .dashboard-header {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+  </style>
+</body>
+</html>

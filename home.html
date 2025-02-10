@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Land Sale – Home</title>
+  <style>
+    /* General Styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fff8f0; /* light, warm background */
+  color: #333;
+}
+
+header {
+  background: #d35400; /* strong orange */
+  color: #fff;
+  padding: 1em;
+  text-align: center;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 1em;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  width: 90%;
+  max-width: 800px;
+  margin: 2em auto;
+  background: #fff;
+  padding: 2em;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-top: 5px solid #d35400;
+}
+
+h1, h2, h3 {
+  margin-top: 0;
+}
+
+fieldset {
+  border: 1px solid #ccc;
+  margin-bottom: 1em;
+  padding: 1em;
+  border-radius: 4px;
+}
+
+legend {
+  font-weight: bold;
+  padding: 0 0.5em;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form input,
+form textarea {
+  margin-bottom: 1em;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+form button {
+  background: #d35400;
+  color: #fff;
+  border: none;
+  padding: 0.7em;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background 0.3s ease;
+}
+
+form button:hover {
+  background: #e67e22;
+}
+
+/* Land Listing Item */
+.land-item {
+  border: 1px solid #ccc;
+  border-left: 5px solid #8e44ad; /* purple accent */
+  padding: 1em;
+  margin-bottom: 1em;
+  background: #fef6e4;
+}
+
+.land-item h3 {
+  margin-top: 0;
+}
+
+button {
+  background: #8e44ad;
+  color: #fff;
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #9b59b6;
+}
+
+/* Dashboard header styling */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .container {
+    width: 95%;
+    padding: 1em;
+  }
+  .dashboard-header {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Land Sale</h1>
+    <nav>
+      <a href="dashboard.html" style="color: rgb(253, 249, 249); text-decoration: underline rgb(5, 5, 5);">Create you LandSale</a>
+    </nav>
+  </header>
+  <div class="container">
+    <h2>Available Lands for Sale</h2>
+    <div id="landListings"></div>
+  </div>
+
+  <script>
+    // Fetch and display all land listings.
+    fetch("https://sheetdb.io/api/v1/6g4qxy990p57f")
+      .then(response => response.json())
+      .then(records => {
+        const listingsDiv = document.getElementById("landListings");
+        listingsDiv.innerHTML = "";
+        if (records.length === 0) {
+          listingsDiv.innerHTML = "<p>No lands available for sale.</p>";
+        } else {
+          records.forEach(record => {
+            const div = document.createElement("div");
+            div.className = "land-item";
+            div.innerHTML = `
+              <h3>${record.landName}</h3>
+              <p><strong>Area:</strong> ${record.area}</p>
+              <p><strong>Type:</strong> ${record.landType}</p>
+              <p><strong>Address:</strong> ${record.address}, ${record.state}</p>
+              <p><strong>Price:</strong> Rs. ${record.price}</p>
+              <button onclick="contactOwner('${record.mobile}')">Contact Land Owner</button>
+            `;
+            listingsDiv.appendChild(div);
+          });
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching listings:", error);
+      });
+
+    function contactOwner(mobile) {
+      // This will open the dialer on devices that support tel: links.
+      window.location.href = "tel:" + mobile;
+    }
+  </script>
+</body>
+</html>
